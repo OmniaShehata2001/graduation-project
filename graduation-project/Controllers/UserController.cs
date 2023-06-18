@@ -29,12 +29,15 @@ namespace graduation_project.Controllers
         {
             var user = graduation_project.Entities.User.CreateUser(dto.UserName, dto.Password, dto.Email, dto.PhoneNumber);
 
-
-            await dataContext.User.AddAsync(user);
+            if (user.user is null) 
+            {
+                return BadRequest(user.error);
+            }
+            await dataContext.User.AddAsync(user.user);
             var rowEfected = await dataContext.SaveChangesAsync();
             if (rowEfected > 0)
             {
-                return Ok(user.UserGuid);
+                return Ok(user.user.UserGuid);
             }
             else
             {
@@ -64,14 +67,14 @@ namespace graduation_project.Controllers
 
             if (user is null)
             {
-                return BadRequest("User Not Found");
+                return BadRequest(new { Error="User Not Found"});
             }
             else
             {
                 if (user.Password == password)
-                    return Ok(user.UserGuid);
+                    return Ok(new { Guid= user.UserGuid });
                 else
-                    return BadRequest("Password Invalid");
+                    return BadRequest(new { Error = "Password not valid" });
             }
         }
     }

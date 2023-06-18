@@ -15,7 +15,7 @@ namespace graduation_project.Entities
         public string UserGuid { get; set; }
 
 
-        public static User CreateUser
+        public static (User user,string error) CreateUser
             (
             string userName,
             string password,
@@ -23,14 +23,18 @@ namespace graduation_project.Entities
             string phoneNumber
             )
         {
-            return new User
+            if (password.Length <= 4)
+            {
+                return (user: null, error: "Password is not valid");
+            }
+            return (user: new User
             {
                 Email = email,
                 Password = password,
                 PhoneNumber = phoneNumber,
                 UserName = userName,
                 UserGuid = Guid.NewGuid().ToString()
-            };
+            },error:string.Empty);
         }
     }
 }
